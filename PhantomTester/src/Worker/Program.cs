@@ -9,6 +9,7 @@ namespace Worker
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("HELLO WORLD!!");
         }
     }
 }
