@@ -48,7 +48,7 @@ namespace Master.Controllers
             //BrokeredMessage message = new BrokeredMessage(request);
             //client.Send(message);
 
-            _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(5));
+            _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(2));
 
             while (_response == null && _memoryCach.Get(request.Guid) != null)
             {
