@@ -42,6 +42,7 @@ namespace Master.Controllers
                 return BadRequest("Json is in wrong format");
             }
 
+            request.Timestamp = DateTime.Now;
             request.Guid = Guid.NewGuid();
 
             //QueueClient client = QueueClient.CreateFromConnectionString(_connectionString, _queueName);
