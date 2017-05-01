@@ -11,5 +11,6 @@ namespace Model
         public DateTime Timestamp { get; set; }
         public List<string> Assertions { get; set; }
         public string HtmlBody { get; set; }
+        public Guid Guid { get; set; }
     }
 }

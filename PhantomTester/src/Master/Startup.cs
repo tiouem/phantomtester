@@ -28,6 +28,7 @@ namespace Master
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddMemoryCache();
             services.AddMvc();
         }
 
