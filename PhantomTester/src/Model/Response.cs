@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    public class WorkerResponse
+    public class Response
     {
+
     }
 }
