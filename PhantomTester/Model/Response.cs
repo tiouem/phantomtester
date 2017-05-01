@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    class Response
+    public class Response
     {
+        public List<string> Assertions { get; set; }
+        public string HtmlBody { get; set; }
     }
 }
