@@ -11,6 +11,7 @@ namespace Model
         public string Name { get; set; }
         public string RootUrl { get; set; }
         public DateTime Timestamp { get; set; }
+        public Guid Guid { get; set; }
         public List<Command> Commands { get; set; }
     }
 }

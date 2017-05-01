@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    class Response
+    public class Response
     {
+        public Guid Guid { get; set; }
     }
 }
