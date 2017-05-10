@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Client.Models;
+using Model;
 
 namespace Client.Data
 {
@@ -14,6 +15,9 @@ namespace Client.Data
             : base(options)
         {
         }
+        public DbSet<Token> Tokens { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
