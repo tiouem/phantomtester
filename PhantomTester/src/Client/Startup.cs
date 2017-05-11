@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Client.Data;
 using Client.Models;
 using Client.Services;
+using Model;
 
 namespace Client
 {
@@ -55,7 +57,7 @@ namespace Client
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,ApplicationDbContext dbcontext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -83,6 +85,21 @@ namespace Client
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            if (!dbcontext.Subscriptions.Any())
+            {
+                dbcontext.Subscriptions.Add(new Subscription()
+                {
+                    Name = "Basic",
+                    Limit = 200
+                });
+                dbcontext.SaveChanges()
+                ;
+
+            }
+
+
+            dbcontext.Database.Migrate();
         }
     }
 }

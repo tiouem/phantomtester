@@ -8,9 +8,10 @@ using Client.Data;
 namespace Client.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170503143522_initialMigration")]
+    partial class initialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -199,13 +200,14 @@ namespace Client.Data.Migrations
 
                     b.Property<int>("SubscritionId");
 
-                    b.Property<int>("Usages");
-
-                    b.Property<string>("UserId");
+                    b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SubscriptionId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Tokens");
                 });
@@ -222,9 +224,6 @@ namespace Client.Data.Migrations
                     b.Property<string>("UserName");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TokenId")
-                        .IsUnique();
 
                     b.ToTable("User");
                 });
@@ -272,13 +271,10 @@ namespace Client.Data.Migrations
                         .WithMany("Tokens")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
 
-            modelBuilder.Entity("Model.User", b =>
-                {
-                    b.HasOne("Model.Token", "Token")
-                        .WithOne("User")
-                        .HasForeignKey("Model.User", "TokenId")
+                    b.HasOne("Model.User", "User")
+                        .WithOne("Token")
+                        .HasForeignKey("Model.Token", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }
