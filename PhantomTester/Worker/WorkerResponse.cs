@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Response = Model.Response;
+﻿using Response = Model.Response;
 
 namespace Worker
 {
