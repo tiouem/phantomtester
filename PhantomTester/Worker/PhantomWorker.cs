@@ -5,7 +5,6 @@ using Worker.Commands;
 
 namespace Worker
 {
-
     public class PhantomWorker : IDisposable
     {
         private readonly PhantomJSDriver _driver;
@@ -18,23 +17,16 @@ namespace Worker
 
         public WorkerResponse ExecuteRequest(WorkerRequest request)
         {
-            var stepNr = 1;
-            var assertions = new List<string>();
+            var commandNr = 1;
+            var commandResults = new List<string>();
             _driver.Navigate().GoToUrl(request.RootUrl);
             foreach (var command in request.Commands)
             {
-                if (command is ElementExists)
-                {
-                    var success = command.Execute(_driver);
-                    assertions.Add("Step " + stepNr + " - " + command.Cmd + " - " + (success ? "success" : "failed"));
-                }
-                else
-                {
-                    command.Execute(_driver);
-                }
-                stepNr++;
+                var success = command.Execute(_driver);
+                commandResults.Add("Command nr " + commandNr + " '" + command.Cmd + "' - " + (success ? "success" : "failed"));
+                commandNr++;
             }
-            var response = new WorkerResponse { Assertions = assertions };
+            var response = new WorkerResponse {Assertions = commandResults};
             if (request.ReturnHtml)
             {
                 response.HtmlBody = _driver.PageSource;
