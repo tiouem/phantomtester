@@ -85,6 +85,7 @@ namespace Client
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            dbcontext.Database.Migrate();
 
             if (!dbcontext.Subscriptions.Any())
             {
@@ -99,7 +100,6 @@ namespace Client
             }
 
 
-            dbcontext.Database.Migrate();
         }
     }
 }

@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using Microsoft.ServiceBus.Messaging;
 using Model;
 using Newtonsoft.Json;
@@ -17,11 +19,17 @@ namespace Master.Controllers
 {
     public class MainController : Controller
     {
-        private static String _queueName = "Name";
-        private static String _connectionString = "connectionString";
-        private readonly IMemoryCache _memoryCach;
+        private static readonly String _pttoken = "pttoken";
 
+        private static String _queueName = "ptqueue";
+
+        private static String _connectionString =
+            "Endpoint=sb://ptservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=QIphzMy8SYdjw7N8N26isODvtGgyeU7azbSai3ZvRiE=";
+
+        private readonly IMemoryCache _memoryCach;
         private Response _response = null;
+
+        private PhantomTesterContext _db = new PhantomTesterContext();
 
         public MainController(IMemoryCache memoryCache)
         {
@@ -35,8 +43,27 @@ namespace Master.Controllers
         /// <returns>IActionResult</returns>
         [HttpPost]
         [Route("main")]
-        public IActionResult PostRequest([FromBody]Request request)
+        public IActionResult PostRequest([FromBody] Request request)
         {
+            if (!Request.Headers.ContainsKey(_pttoken))
+            {
+                return BadRequest("Please specify pttoken in request headers");
+            }
+
+            string token = Request.Headers[_pttoken];
+
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+
+            TelemetryClient telemetryClient = new TelemetryClient();
+
             if (request == null)
             {
                 return BadRequest("Json is in wrong format");
@@ -45,11 +72,13 @@ namespace Master.Controllers
             request.Timestamp = DateTime.Now;
             request.Guid = Guid.NewGuid();
 
-            //QueueClient client = QueueClient.CreateFromConnectionString(_connectionString, _queueName);
-            //BrokeredMessage message = new BrokeredMessage(request);
-            //client.Send(message);
+            QueueClient client = QueueClient.CreateFromConnectionString(_connectionString, _queueName);
+            BrokeredMessage message = new BrokeredMessage(request);
+            client.Send(message);
 
             _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(2));
+
+            telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
             while (_response == null && _memoryCach.Get(request.Guid) != null)
             {
@@ -65,15 +94,28 @@ namespace Master.Controllers
         {
             if (response != null)
             {
+                TelemetryClient telemetryClient = new TelemetryClient();
+
                 Request request = new Request();
                 if (_memoryCach.TryGetValue(response.Guid, out request))
                 {
                     _memoryCach.Remove(response.Guid);
                     _response = response;
+
+                    telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));
+
                     return Ok();
                 }
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        [Route("iamalive")]
+        public IActionResult Get()
+        {
+            return Ok();
+        }
+
     }
 }
