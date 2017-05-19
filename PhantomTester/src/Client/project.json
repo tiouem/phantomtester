@@ -3,6 +3,7 @@
 
   "dependencies": {
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.2",
+    "Microsoft.ApplicationInsights.Web": "2.3.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0",
