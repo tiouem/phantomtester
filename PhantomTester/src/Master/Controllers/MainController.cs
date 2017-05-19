@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using Microsoft.ServiceBus.Messaging;
 using Model;
 using Newtonsoft.Json;
@@ -18,11 +19,17 @@ namespace Master.Controllers
 {
     public class MainController : Controller
     {
-        private static String _queueName = "ptqueue";
-        private static String _connectionString = "Endpoint=sb://ptservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=QIphzMy8SYdjw7N8N26isODvtGgyeU7azbSai3ZvRiE=";
-        private readonly IMemoryCache _memoryCach;
+        private static readonly String _pttoken = "pttoken";
 
+        private static String _queueName = "ptqueue";
+
+        private static String _connectionString =
+            "Endpoint=sb://ptservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=QIphzMy8SYdjw7N8N26isODvtGgyeU7azbSai3ZvRiE=";
+
+        private readonly IMemoryCache _memoryCach;
         private Response _response = null;
+
+        private PhantomTesterContext _db = new PhantomTesterContext();
 
         public MainController(IMemoryCache memoryCache)
         {
@@ -36,8 +43,25 @@ namespace Master.Controllers
         /// <returns>IActionResult</returns>
         [HttpPost]
         [Route("main")]
-        public IActionResult PostRequest([FromBody]Request request)
+        public IActionResult PostRequest([FromBody] Request request)
         {
+            if (!Request.Headers.ContainsKey(_pttoken))
+            {
+                return BadRequest("Please specify pttoken in request headers");
+            }
+
+            string token = Request.Headers[_pttoken];
+
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+
             TelemetryClient telemetryClient = new TelemetryClient();
 
             if (request == null)
