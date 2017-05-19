@@ -5,18 +5,19 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using Model;
 using Newtonsoft.Json;
 using Worker.Converters;
 
 namespace Worker
 {
     /// <summary>
-    /// Handles retrieving messages from the request queue and sending the responses to the master.
+    ///     Handles retrieving messages from the request queue and sending the responses to the master.
     /// </summary>
-    class MessageHandler
+    internal class MessageHandler
     {
         private readonly string _masterUrl = "http://ptmaster.azurewebsites.net/response";
-        private readonly string _ptQueue = "ptclient";
+        private readonly string _ptQueue = "ptqueue";
         private QueueClient _ptQueueClient;
 
         public MessageHandler()
@@ -28,54 +29,46 @@ namespace Worker
         {
             var manager = NamespaceManager.Create();
             if (!manager.QueueExists(_ptQueue))
-            {
-                //Queue does notexist, so it returns and the program shuts down.
                 return;
-            }
             _ptQueueClient = QueueClient.Create(_ptQueue);
             StartListening();
         }
 
         /// <summary>
-        /// Starts listening to the request queue.
+        ///     Starts listening to the request queue.
         /// </summary>
         public void StartListening()
         {
             //TODO:Maybe provide a way to turn it off somehow
             while (true)
-            {
                 try
                 {
                     var message = _ptQueueClient.Receive();
                     if (message != null)
-                    {
-                        //Starts a task so that it can start listening for more messages.
                         Task.Run(() => ProcessMessage(message));
-                    }
-                    else
-                    {
-                        break;
-                    }
                 }
                 catch (Exception)
                 {
                     //Error handling
                 }
-            }
         }
 
         /// <summary>
-        /// Attempts to Deserialize the incoming message to a Request object, then excutes it.
+        ///     Attempts to Deserialize the incoming message to a Request object, then excutes it.
         /// </summary>
         /// <param name="message"></param>
         public void ProcessMessage(BrokeredMessage message)
         {
-            WorkerRequest request;
+            WorkerRequest workerRequest;
             try
             {
-                request = JsonConvert.DeserializeObject<WorkerRequest>(message.GetBody<string>(), new CommandConverter());
+                var request = message.GetBody<Request>();
+                var requestJson = JsonConvert.SerializeObject(request);
+                workerRequest = JsonConvert.DeserializeObject<WorkerRequest>(JsonConvert.SerializeObject(request),
+                    new CommandConverter());
+                message.Complete();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 //The message could not be parsed. Calls "message.DeadLetter();" so the message isn't read again and again.
                 //TODO:Needs a way to let master know that a request was in wrong format so that master can let the user know.
@@ -88,13 +81,12 @@ namespace Worker
                 WorkerResponse response;
                 using (var worker = new PhantomWorker())
                 {
-                    response = worker.ExecuteRequest(request);
+                    response = worker.ExecuteRequest(workerRequest);
                 }
                 SendResponse(response);
-                message.Complete();
             }
-            catch (Exception)
-            {
+            catch (Exception e)
+            {   
                 //Something went wrong with the worker.
                 //TODO:Let user know something went wrong and he should try again
                 message.DeadLetter();
@@ -103,27 +95,27 @@ namespace Worker
         }
 
         /// <summary>
-        /// Sends the response message to the master using HTTP Post.
+        ///     Sends the response message to the master using HTTP Post.
         /// </summary>
         /// <param name="body">The body of the message. Should be a serialized "Response" model.</param>
         public void SendResponse(WorkerResponse response)
         {
-            using (var client = GetClient())
+            Task.Run(async () =>
             {
-                Task.Run(() =>
+                using (var client = GetClient())
                 {
-                    var postAsJsonAsync = client.PostAsJsonAsync(_masterUrl, response).Result;
+                    var postAsJsonAsync = await client.PostAsJsonAsync(_masterUrl, response);
                     var statusCode = postAsJsonAsync.StatusCode;
                     if (statusCode != HttpStatusCode.Accepted)
                     {
                         //Something went wrong with the post
                     }
-                });
-            }
+                }
+            });
         }
 
         /// <summary>
-        /// Returns an HttpClient thats ready to be used.
+        ///     Returns an HttpClient thats ready to be used.
         /// </summary>
         /// <returns></returns>
         private HttpClient GetClient()

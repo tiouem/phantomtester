@@ -10,9 +10,9 @@ namespace Worker.Converters
     {
         protected override WorkerCommand Create(Type objectType, JObject jObject)
         {
-            if (FieldExists("Command", jObject))
+            if (FieldExists("Cmd", jObject))
             {
-                var value = jObject["Command"].Value<string>();
+                var value = jObject["Cmd"].Value<string>();
                 var parameters = jObject["Parameters"].Values<string>().ToArray();
                 switch (value)
                 {
