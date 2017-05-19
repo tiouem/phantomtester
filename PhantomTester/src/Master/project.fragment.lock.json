@@ -8,6 +8,7 @@
         "bin/Debug/Model.dll": {}
       },
       "runtime": {
+        "C:/Users/Michal/.nuget/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/1.0.0/lib/net451/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll": {},
         "bin/Debug/Model.dll": {}
       },
       "contentFiles": {
