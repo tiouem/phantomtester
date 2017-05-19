@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.ServiceBus.Messaging;
@@ -37,6 +38,8 @@ namespace Master.Controllers
         [Route("main")]
         public IActionResult PostRequest([FromBody]Request request)
         {
+            TelemetryClient telemetryClient = new TelemetryClient();
+
             if (request == null)
             {
                 return BadRequest("Json is in wrong format");
@@ -50,6 +53,8 @@ namespace Master.Controllers
             client.Send(message);
 
             _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(2));
+
+            telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
             while (_response == null && _memoryCach.Get(request.Guid) != null)
             {
@@ -65,11 +70,16 @@ namespace Master.Controllers
         {
             if (response != null)
             {
+                TelemetryClient telemetryClient = new TelemetryClient();
+
                 Request request = new Request();
                 if (_memoryCach.TryGetValue(response.Guid, out request))
                 {
                     _memoryCach.Remove(response.Guid);
                     _response = response;
+
+                    telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));
+
                     return Ok();
                 }
             }
