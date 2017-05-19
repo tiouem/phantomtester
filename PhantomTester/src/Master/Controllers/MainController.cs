@@ -17,8 +17,8 @@ namespace Master.Controllers
 {
     public class MainController : Controller
     {
-        private static String _queueName = "Name";
-        private static String _connectionString = "connectionString";
+        private static String _queueName = "ptqueue";
+        private static String _connectionString = "Endpoint=sb://ptservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=QIphzMy8SYdjw7N8N26isODvtGgyeU7azbSai3ZvRiE=";
         private readonly IMemoryCache _memoryCach;
 
         private Response _response = null;
@@ -45,9 +45,9 @@ namespace Master.Controllers
             request.Timestamp = DateTime.Now;
             request.Guid = Guid.NewGuid();
 
-            //QueueClient client = QueueClient.CreateFromConnectionString(_connectionString, _queueName);
-            //BrokeredMessage message = new BrokeredMessage(request);
-            //client.Send(message);
+            QueueClient client = QueueClient.CreateFromConnectionString(_connectionString, _queueName);
+            BrokeredMessage message = new BrokeredMessage(request);
+            client.Send(message);
 
             _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(2));
 
