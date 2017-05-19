@@ -14,6 +14,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
+    <ApplicationInsightsResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <ItemGroup>
     <DnxInvisibleContent Include="bower.json" />
