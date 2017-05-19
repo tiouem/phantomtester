@@ -75,5 +75,13 @@ namespace Master.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        [Route("iamalive")]
+        public IActionResult Get()
+        {
+            return Ok();
+        }
+
     }
 }
