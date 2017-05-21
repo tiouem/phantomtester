@@ -87,6 +87,7 @@ namespace Master.Controllers
                 }
 
                 _db.Tokens.Find(token.Id).Usages++;
+                _db.SaveChangesAsync();
 
             }
             catch (Exception e)
@@ -95,7 +96,6 @@ namespace Master.Controllers
                 return StatusCode(500, e.Message);
             }
 
-            
             request.Timestamp = DateTime.Now;
             request.Guid = Guid.NewGuid();
 
@@ -103,22 +103,27 @@ namespace Master.Controllers
             BrokeredMessage message = new BrokeredMessage(request);
             client.Send(message);
 
-            _memoryCach.Set(request.Guid, request, TimeSpan.FromMinutes(2));
+            _memoryCach.Set<Model.Response>(request.Guid, null, TimeSpan.FromMinutes(2));
 
             telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
-            while (_response == null && _memoryCach.Get(request.Guid) != null)
+            try
             {
-                //do nothing
+                while (_memoryCach.Get(request.Guid) == null)
+                {
+                    //do nothing
+                }
             }
-            while (_memoryCach.Get(request.Guid) == null)
+            catch (Exception e)
             {
-                
+                telemetryClient.TrackException(e);
+                return StatusCode(500, "timeout");
             }
+            
             Response response;
             if (_memoryCach.TryGetValue(request.Guid, out response))
             {
-                _memoryCach.Remove(response.Guid);
+                _memoryCach.Remove(request.Guid);
             }
             return Ok(response);
         }
@@ -131,17 +136,11 @@ namespace Master.Controllers
             {
                 TelemetryClient telemetryClient = new TelemetryClient();
 
-                Request request = new Request();
-                if (_memoryCach.TryGetValue(response.Guid, out request))
-                {
-                    _memoryCach.Remove(response.Guid);
-                    _memoryCach.Set(response.Guid, response, TimeSpan.FromMinutes(2));
-                    _response = response;
+                _memoryCach.Set(response.Guid, response, TimeSpan.FromMinutes(2));
 
-                    telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));
+                telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));
 
-                    return Ok();
-                }
+                return Ok();
             }
             return BadRequest();
         }
