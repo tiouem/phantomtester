@@ -2,6 +2,7 @@
   "userSecretsId": "aspnet-Client-e48bde70-35e7-4896-91b2-3f93cb60e2e1",
 
   "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.2",
     "Microsoft.ApplicationInsights.Web": "2.3.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
