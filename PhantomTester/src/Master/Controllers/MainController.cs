@@ -109,21 +109,18 @@ namespace Master.Controllers
 
             try
             {
-                new System.Threading.Thread(() =>
+                while (_memoryCach.Get(request.Guid) == null)
                 {
-                    while (_memoryCach.Get(request.Guid) == null)
-                    {
-                        //do nothing
-                        System.Threading.Thread.Sleep(1);
-                    }
-                }).Start();
+                    //do nothing
+                    System.Threading.Thread.Sleep(10);
+                }
             }
             catch (Exception e)
             {
                 telemetryClient.TrackException(e);
                 return StatusCode(500, "timeout");
             }
-            
+
             Response response;
             if (_memoryCach.TryGetValue(request.Guid, out response))
             {
