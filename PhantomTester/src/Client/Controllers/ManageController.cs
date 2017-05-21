@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Client.Models;
 using Client.Models.ManageViewModels;
 using Client.Services;
+using Model;
 
 namespace Client.Controllers
 {

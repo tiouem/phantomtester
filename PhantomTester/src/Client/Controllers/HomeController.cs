@@ -8,6 +8,7 @@ using Client.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Model;
 
 namespace Client.Controllers
 {
