@@ -116,7 +116,7 @@ namespace Master.Controllers
                         //do nothing
                         System.Threading.Thread.Sleep(1);
                     }
-                });
+                }).Start();
             }
             catch (Exception e)
             {
