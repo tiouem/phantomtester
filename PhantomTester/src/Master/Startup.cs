@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Model;
 
 namespace Master
 {
@@ -30,6 +32,11 @@ namespace Master
             PhantomTesterContext.ConnectionString = Configuration.GetConnectionString("PhantomTester");
 
             // Add framework services.
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+               .AddEntityFrameworkStores<PhantomTesterContext>()
+               .AddDefaultTokenProviders();
+
             services.AddMemoryCache();
             services.AddMvc();
         }
