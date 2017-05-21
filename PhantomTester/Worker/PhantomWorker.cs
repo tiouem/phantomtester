@@ -26,7 +26,7 @@ namespace Worker
                 commandResults.Add("Command nr " + commandNr + " '" + command.Cmd + "' - " + (success ? "success" : "failed"));
                 commandNr++;
             }
-            var response = new WorkerResponse {Assertions = commandResults};
+            var response = new WorkerResponse {Assertions = commandResults, Guid = request.Guid, Timestamp = request.Timestamp};
             if (request.ReturnHtml)
             {
                 response.HtmlBody = _driver.PageSource;

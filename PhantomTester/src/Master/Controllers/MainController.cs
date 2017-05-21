@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
@@ -110,8 +111,16 @@ namespace Master.Controllers
             {
                 //do nothing
             }
-
-            return Ok(_response);
+            while (_memoryCach.Get(request.Guid) == null)
+            {
+                
+            }
+            Response response;
+            if (_memoryCach.TryGetValue(request.Guid, out response))
+            {
+                _memoryCach.Remove(response.Guid);
+            }
+            return Ok(response);
         }
 
         [HttpPost]
@@ -126,6 +135,7 @@ namespace Master.Controllers
                 if (_memoryCach.TryGetValue(response.Guid, out request))
                 {
                     _memoryCach.Remove(response.Guid);
+                    _memoryCach.Set(response.Guid, response, TimeSpan.FromMinutes(2));
                     _response = response;
 
                     telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));

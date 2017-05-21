@@ -63,7 +63,6 @@ namespace Worker
             try
             {
                 var request = message.GetBody<Request>();
-                var requestJson = JsonConvert.SerializeObject(request);
                 workerRequest = JsonConvert.DeserializeObject<WorkerRequest>(JsonConvert.SerializeObject(request),
                     new CommandConverter());
                 message.Complete();
