@@ -28,7 +28,6 @@
         "../packages/Microsoft.Extensions.Caching.Abstractions.1.1.0/lib/netstandard1.0/Microsoft.Extensions.Caching.Abstractions.dll": {},
         "../packages/Microsoft.Extensions.Caching.Memory.1.1.0/lib/net451/Microsoft.Extensions.Caching.Memory.dll": {},
         "../packages/Microsoft.Extensions.Configuration.Abstractions.1.1.0/lib/netstandard1.0/Microsoft.Extensions.Configuration.Abstractions.dll": {},
-        "../packages/Microsoft.Extensions.DependencyInjection.1.1.0/lib/netstandard1.1/Microsoft.Extensions.DependencyInjection.dll": {},
         "../packages/Microsoft.Extensions.DependencyInjection.Abstractions.1.1.0/lib/netstandard1.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {},
         "../packages/Microsoft.Extensions.FileProviders.Abstractions.1.1.0/lib/netstandard1.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {},
         "../packages/Microsoft.Extensions.Logging.1.1.0/lib/netstandard1.1/Microsoft.Extensions.Logging.dll": {},
