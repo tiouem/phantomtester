@@ -119,14 +119,15 @@ namespace Client.Controllers
                     SubscriptionId = 1,
                     UserId = user.Id
                 };
-                _context.Tokens.Add(t);
-                _context.SaveChanges();
 
-                user.TokenId = t.Id;
+//                user.TokenId = t.Id;
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    _context.Tokens.Add(t);
+                    _context.SaveChanges();
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     
                     _logger.LogInformation(3, "User created a new account with password.");

@@ -8,9 +8,10 @@ using Client.Data;
 namespace Client.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170521083928_ForeignKeyUpdate")]
+    partial class ForeignKeyUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -154,6 +155,8 @@ namespace Client.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed");
 
                     b.Property<string>("SecurityStamp");
+
+                    b.Property<int>("TokenId");
 
                     b.Property<bool>("TwoFactorEnabled");
 

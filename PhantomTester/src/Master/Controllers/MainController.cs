@@ -10,10 +10,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using Microsoft.ServiceBus.Messaging;
 using Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Master.Controllers
 {
@@ -47,28 +43,58 @@ namespace Master.Controllers
         {
             if (!Request.Headers.ContainsKey(_pttoken))
             {
-                return BadRequest("Please specify pttoken in request headers");
+                return BadRequest("pttoken not specified");
             }
 
-            string token = Request.Headers[_pttoken];
-
-            try
+            if (request == null)
             {
-
-            }
-            catch (Exception)
-            {
-                
-                throw;
+                return BadRequest("Body format of the request is wrong");
             }
 
             TelemetryClient telemetryClient = new TelemetryClient();
 
-            if (request == null)
+            try
             {
-                return BadRequest("Json is in wrong format");
+                Guid tokenGuid = Guid.Parse(Request.Headers[_pttoken]);
+                var queryToken =
+                    from t in _db.Tokens
+                    where t.GuidToken == tokenGuid
+                    select t;
+
+                if (!queryToken.Any())
+                {
+                    return BadRequest("Incorrect pttoken");
+                }
+
+                Token token = queryToken.FirstOrDefault();
+
+                var queryMaxUsages =
+                    from s in _db.Subscriptions
+                    where s.Id == token.SubscriptionId
+                    select s.Limit;
+
+                if (!queryMaxUsages.Any())
+                {
+                    return StatusCode(500, "Subscription not found");
+                }
+
+                int limit = queryMaxUsages.FirstOrDefault();
+
+                if (token.Usages >= limit)
+                {
+                    return BadRequest("Your subscription limit was exceeded");
+                }
+
+                _db.Tokens.Find(token.Id).Usages++;
+
+            }
+            catch (Exception e)
+            {
+                telemetryClient.TrackException(e);
+                return StatusCode(500, e.Message);
             }
 
+            
             request.Timestamp = DateTime.Now;
             request.Guid = Guid.NewGuid();
 
