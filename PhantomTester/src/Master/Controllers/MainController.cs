@@ -109,10 +109,14 @@ namespace Master.Controllers
 
             try
             {
-                while (_memoryCach.Get(request.Guid) == null)
+                new System.Threading.Thread(() =>
                 {
-                    //do nothing
-                }
+                    while (_memoryCach.Get(request.Guid) == null)
+                    {
+                        //do nothing
+                        System.Threading.Thread.Sleep(1);
+                    }
+                });
             }
             catch (Exception e)
             {
