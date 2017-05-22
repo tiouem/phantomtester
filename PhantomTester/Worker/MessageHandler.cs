@@ -17,7 +17,7 @@ namespace Worker
     /// </summary>
     internal class MessageHandler
     {
-        private readonly string _masterUrl = "http://localhost:58388/response";
+        private readonly string _masterUrl = "http://ptmaster.azurewebsites.net/response";
         private readonly string _ptQueue = "ptqueue";
         private QueueClient _ptQueueClient;
 
