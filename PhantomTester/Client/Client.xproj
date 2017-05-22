@@ -6,16 +6,19 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>939e4bf8-c039-4da5-859b-fa9545866996</ProjectGuid>
-    <RootNamespace>Master</RootNamespace>
+    <ProjectGuid>e6fb0a69-a84d-4d1b-ac5c-519f8aa4b5b5</ProjectGuid>
+    <RootNamespace>Client</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <ApplicationInsightsResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsResourceId>
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
+  <ItemGroup>
+    <DnxInvisibleContent Include="bower.json" />
+    <DnxInvisibleContent Include=".bowerrc" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
