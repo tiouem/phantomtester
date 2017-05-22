@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Client.Data;
 using Client.Models;
 using Client.Services;
-using Model;
 
 namespace Client
 {

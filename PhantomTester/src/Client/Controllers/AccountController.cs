@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Client.Models;
 using Client.Models.AccountViewModels;
 using Client.Services;
-using Model;
 
 namespace Client.Controllers
 {
