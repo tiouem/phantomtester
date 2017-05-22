@@ -88,7 +88,7 @@ namespace Master.Controllers
                 }
 
                 _db.Tokens.Find(token.Id).Usages++;
-                _db.SaveChangesAsync();
+                _db.SaveChanges();
 
             }
             catch (Exception e)
