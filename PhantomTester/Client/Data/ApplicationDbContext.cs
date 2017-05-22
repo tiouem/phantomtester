@@ -16,7 +16,7 @@ namespace Client.Data
         }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
-        
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -32,7 +32,7 @@ namespace Client.Data
                 .WithOne(t => t.User)
                 .HasForeignKey<Token>(t => t.UserId);
 
-            
+
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);

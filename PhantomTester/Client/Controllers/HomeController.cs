@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Client.Controllers
 {
-    
+
     public class HomeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-  
+
 
         public HomeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
         {
@@ -37,7 +37,7 @@ namespace Client.Controllers
             //var model = new UserDetailVM();
             UserDetailVM model = null;
             ClaimsPrincipal currentUser = this.User;
-            if(_signInManager.IsSignedIn(User))
+            if (_signInManager.IsSignedIn(User))
             {
                 var userId = _userManager.GetUserId(currentUser);
                 var username = _userManager.GetUserName(currentUser);
@@ -56,13 +56,13 @@ namespace Client.Controllers
                     TokenUsage = usage,
                     SubscriptionName = sName,
                     SubscriptionLimit = sLimit
-                };             
+                };
             }
             else
             {
-               return RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
-     
+
 
 
             return View(model);

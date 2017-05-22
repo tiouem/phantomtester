@@ -119,7 +119,7 @@ namespace Client.Controllers
                     UserId = user.Id
                 };
 
-//                user.TokenId = t.Id;
+                //                user.TokenId = t.Id;
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -128,7 +128,7 @@ namespace Client.Controllers
                     _context.SaveChanges();
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    
+
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
@@ -136,7 +136,7 @@ namespace Client.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return RedirectToAction("index","Home");
+            return RedirectToAction("index", "Home");
         }
 
         //
