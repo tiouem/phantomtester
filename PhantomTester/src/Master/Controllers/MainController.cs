@@ -17,6 +17,7 @@ namespace Master.Controllers
     public class MainController : Controller
     {
         private static readonly String _pttoken = "pttoken";
+        private EventWaitHandle _waitHandle;
 
         private static String _queueName = "ptqueue";
 
@@ -104,22 +105,11 @@ namespace Master.Controllers
             client.Send(message);
 
             _memoryCach.Set<Model.Response>(request.Guid, null, TimeSpan.FromMinutes(2));
-
+            _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, request.Guid.ToString());
             telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
-            try
-            {
-                while (_memoryCach.Get(request.Guid) == null)
-                {
-                    //do nothing
-                    System.Threading.Thread.Sleep(10);
-                }
-            }
-            catch (Exception e)
-            {
-                telemetryClient.TrackException(e);
-                return StatusCode(500, "timeout");
-            }
+            //Wait for the response using the same timeout as for the cache
+            _waitHandle.WaitOne(TimeSpan.FromMinutes(2));
 
             Response response;
             if (_memoryCach.TryGetValue(request.Guid, out response))
@@ -138,7 +128,8 @@ namespace Master.Controllers
                 TelemetryClient telemetryClient = new TelemetryClient();
 
                 _memoryCach.Set(response.Guid, response, TimeSpan.FromMinutes(2));
-
+                _waitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, response.Guid.ToString());
+                _waitHandle.Set();
                 telemetryClient.TrackEvent(String.Format(@"{0} Message received from worker", response.Guid));
 
                 return Ok();
