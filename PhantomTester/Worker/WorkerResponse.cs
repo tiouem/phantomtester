@@ -1,4 +1,4 @@
-﻿using Response = Model.Response;
+﻿using Model;
 
 namespace Worker
 {

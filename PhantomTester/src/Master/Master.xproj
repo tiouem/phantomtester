@@ -17,5 +17,8 @@
     <ApplicationInsightsResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/7225ded6-0f88-4635-9b02-23d3b2d9740b/resourcegroups/phantom_tester/providers/microsoft.insights/components/PtInsights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Model\Model.csproj" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,7 +17,7 @@ namespace Worker
     /// </summary>
     internal class MessageHandler
     {
-        private readonly string _masterUrl = "http://ptmaster.azurewebsites.net/response";
+        private readonly string _masterUrl = "http://localhost:58388/response";
         private readonly string _ptQueue = "ptqueue";
         private QueueClient _ptQueueClient;
 
@@ -44,6 +45,7 @@ namespace Worker
                 try
                 {
                     var message = _ptQueueClient.Receive();
+                    Console.WriteLine("Received message " + message.MessageId);
                     if (message != null)
                         Task.Run(() => ProcessMessage(message));
                 }
@@ -59,10 +61,11 @@ namespace Worker
         /// <param name="message"></param>
         public void ProcessMessage(BrokeredMessage message)
         {
-            WorkerRequest workerRequest;
+            WorkerRequest workerRequest = null;
             try
             {
                 var request = message.GetBody<Request>();
+                Console.WriteLine("Decoded the message " + request.Guid);
                 workerRequest = JsonConvert.DeserializeObject<WorkerRequest>(JsonConvert.SerializeObject(request),
                     new CommandConverter());
                 message.Complete();
@@ -72,24 +75,31 @@ namespace Worker
                 //The message could not be parsed. Calls "message.DeadLetter();" so the message isn't read again and again.
                 //TODO:Needs a way to let master know that a request was in wrong format so that master can let the user know.
                 message.DeadLetter();
-                throw;
+                Console.WriteLine("////////////////////EXCEPTION trown: " + e.Message);
+                //throw;
             }
-            try
+            if (workerRequest != null)
             {
-                //Worker implements IDisposable, so the using statement makes sure everything is disposed of.
-                WorkerResponse response;
-                using (var worker = new PhantomWorker())
+                try
+
                 {
-                    response = worker.ExecuteRequest(workerRequest);
+                    //Worker implements IDisposable, so the using statement makes sure everything is disposed of.
+                    WorkerResponse response;
+                    using (var worker = new PhantomWorker())
+                    {
+                        response = worker.ExecuteRequest(workerRequest);
+                        Console.WriteLine("Response retrieved");
+                    }
+                    SendResponse(response);
                 }
-                SendResponse(response);
-            }
-            catch (Exception e)
-            {   
-                //Something went wrong with the worker.
-                //TODO:Let user know something went wrong and he should try again
-                message.DeadLetter();
-                throw;
+                catch (Exception e)
+                {
+                    //Something went wrong with the worker.
+                    //TODO:Let user know something went wrong and he should try again
+                    message.DeadLetter();
+                    Console.WriteLine("////////////////////EXCEPTION trown: " + e.Message);
+                    //throw;
+                }
             }
         }
 
@@ -109,6 +119,7 @@ namespace Worker
                     {
                         //Something went wrong with the post
                     }
+                    Console.WriteLine("----- Message sent -----");
                 }
             });
         }

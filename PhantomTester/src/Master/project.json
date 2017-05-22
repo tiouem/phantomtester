@@ -28,6 +28,9 @@
   "frameworks": {
     "net452": {
       "dependencies": {
+        "Model": {
+          "target": "project"
+        }
       }
     }
   },
