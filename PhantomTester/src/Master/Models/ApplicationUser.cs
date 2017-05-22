@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Model;
 
 namespace Master.Models
 {

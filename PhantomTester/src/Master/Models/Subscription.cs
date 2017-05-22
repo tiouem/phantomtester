@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Master.Models;
 
-namespace Model
+namespace Master.Models
 {
     public class Subscription
     {

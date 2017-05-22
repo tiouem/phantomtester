@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Master.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Model;
 
 namespace Master
 {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Model
+namespace Master.Models
 {
     [DataContract]
     public class Command

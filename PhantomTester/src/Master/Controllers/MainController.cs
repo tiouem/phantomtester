@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using Microsoft.ServiceBus.Messaging;
-using Model;
 
 namespace Master.Controllers
 {
@@ -105,7 +104,7 @@ namespace Master.Controllers
             BrokeredMessage message = new BrokeredMessage(request);
             client.Send(message);
 
-            _memoryCach.Set<Model.Response>(request.Guid, null, TimeSpan.FromMinutes(2));
+            _memoryCach.Set<Response>(request.Guid, null, TimeSpan.FromMinutes(2));
             _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, request.Guid.ToString());
             telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
