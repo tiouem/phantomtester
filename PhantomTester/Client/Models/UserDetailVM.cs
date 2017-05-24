@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Client.Models
 {
     public class UserDetailVM
@@ -13,8 +14,9 @@ namespace Client.Models
         public int TokenUsage { get; set; }
 
         public string SubscriptionName { get; set; }
-        public int SubscriptionLimit { get; set; }      
-            
+        public int SubscriptionLimit { get; set; }
+
+        public Table Bible{ get; set; }
     }
 
 }

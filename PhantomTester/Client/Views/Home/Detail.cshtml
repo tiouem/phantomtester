@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-5  toppad  pull-right col-md-offset-3 ">
             <form asp-controller="Account" asp-action="LogOff">
-                <input type="submit"value="LogOff" style="background: rebeccapurple">            
+                <input type="submit" value="LogOff" style="background: rebeccapurple">
             </form>
             <br>
         </div>
@@ -21,18 +21,18 @@
                         <div class=" col-md-9 col-lg-9 ">
                             <table class="table table-user-information">
                                 <tbody>
-                                <tr>
-                                    <td>Department:</td>
-                                    <td>Programming</td>
-                                </tr>
-                                <tr>
-                                    <td>Hire date:</td>
-                                    <td>06/23/2013</td>
-                                </tr>
-                                <tr>
-                                    <td>Date of Birth</td>
-                                    <td>01/24/1988</td>
-                                </tr>
+                                    <tr>
+                                        <td>Department:</td>
+                                        <td>Programming</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hire date:</td>
+                                        <td>06/23/2013</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Birth</td>
+                                        <td>01/24/1988</td>
+                                    </tr>
 
                                 </tbody>
                             </table>
@@ -41,26 +41,47 @@
                     </div>
                 </div>
                 <div class="row">
-                   
-                        <div class="col-lg-12">
-                            <table class="table table-user-information">
-                                <tbody>
-                                    <tr>
-                                        <td>Token</td>
-                                        <td>@Model.TokenGuid</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Usage</td>
-                                        <td>@Model.TokenUsage / @Model.SubscriptionLimit</td>
-                                    </tr>
-                                </tbody>
-                            </table>
 
-                        </div>             
+                    <div class="col-lg-12">
+                        <table class="table table-user-information">
+                            <tbody>
+                                <tr>
+                                    <td>Token</td>
+                                    <td>@Model.TokenGuid</td>
+                                </tr>
+                                <tr>
+                                    <td>Usage</td>
+                                    <td>@Model.TokenUsage / @Model.SubscriptionLimit</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table class="table table-user-information" >
+                            <tbody style="max-height: 150px">
+                                <tr>
+                                    <td>Tittle:</td>
+                                    <td>@Model.Bible.BookTitle</td>
+                                    <td>Chapter:</td>
+                                    <td>@Model.Bible.Chapter</td>
+                                    <td>Verse:</td>
+                                    <td>@Model.Bible.Verse</td>
+                                    <td rowspan="2"><img src="~/images/Jesus-Christ-High-Quality-PNG.png" width="100%"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">@Model.Bible.BibleWords</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <style>
