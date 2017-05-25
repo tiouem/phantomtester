@@ -119,12 +119,16 @@ namespace Worker
                     var tClient = new TelemetryClient();
                     var postAsJsonAsync = await client.PostAsJsonAsync(_masterUrl, response);
                     var statusCode = postAsJsonAsync.StatusCode;
-                    if (statusCode != HttpStatusCode.Accepted)
+                    if (statusCode == HttpStatusCode.OK)
                     {
-                        tClient.TrackEvent("There was an error while sending response " + response.Guid);
+                        tClient.TrackEvent(response.Guid + " Response sent");
+                        Console.WriteLine("----- Message sent -----");
+
                     }
-                    tClient.TrackEvent(response.Guid + " Response sent");
-                    Console.WriteLine("----- Message sent -----");
+                    else
+                    {
+                        tClient.TrackEvent("There was an error (CODE: " + statusCode.ToString() + ") while sending response " + response.Guid);
+                    }
                 }
             });
         }
