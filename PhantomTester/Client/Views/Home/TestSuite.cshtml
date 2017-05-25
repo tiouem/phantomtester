@@ -1,0 +1,280 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add Command</h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table class="table table-user-information">
+                            <tbody>
+                            <tr>
+                                <td>Command</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <select class="form-control" id="selectedCommand" name="selectedCommand">
+                                            <option value="GoToUrl">Go to Url</option>
+                                            <option value="ElementExists">Element Exists</option>
+                                            <option value="GiveInput">Give Input</option>
+                                            <option value="ClickElement">Click Element</option>
+                                            <option value="Login">Login</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Parameters</td>
+                                <td>
+                                    <div id="parameterDiv">
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <button id="addCommand" class="btn btn-default ">Add command</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Setup your request</h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table class="table table-user-information">
+                            <tbody>
+                            <tr>
+                                <td>Request Name</td>
+                                <td>
+                                    <input id="requestName" class="form-control"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Root Url</td>
+                                <td>
+                                    <input id="rootUrl"class="form-control"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Return Html</td>
+                                <td>
+                                    <form>
+                                        <input type="radio" name="returnHtml" value="true" checked> True<br>
+                                        <input type="radio" name="returnHtml" value="false"> False<br>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class=" col-md-12 col-lg-12 ">
+                            <table id="commandTable" class="table table-user-information">
+                                <tbody>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <button id="executeRequest" class="btn btn-default">Execute Request</button>
+                        <div style="text-align: center;" ><img id="loading" src="https://harpers.org/wp-content/themes/harpers/images/ajax_loader.gif" height="30" width="30" style="margin: 10px 10px 10px 10px" hidden="hidden"/></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .user-row {
+        margin-bottom: 14px;
+    }
+
+    .user-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .dropdown-user {
+        margin: 13px 0;
+        padding: 5px;
+        height: 100%;
+    }
+
+    .dropdown-user:hover {
+        cursor: pointer;
+    }
+
+    .table-user-information > tbody > tr {
+        border-top: 1px solid rgb(221, 221, 221);
+    }
+
+    .table-user-information > tbody > tr:first-child {
+        border-top: 0;
+    }
+
+
+    .table-user-information > tbody > tr > td {
+        border-top: 0;
+    }
+
+    .toppad {
+        margin-top: 20px;
+    }
+
+    .btn {
+        margin: 10px auto;
+        display: block;
+    }
+</style>
+@section Scripts{
+    <script>
+        //Calls 'selectionChanged' when ready to make sure parameter inputs are correct
+        $(document).ready(function () {
+            selectionChanged("GoToUrl");
+        });
+
+        //Variables
+        var rootUrl = "";
+        var request = {Name: "", RootUrl:"", ReturnHtml:false, Commands: new Array};
+        var commandId = 0;
+        
+        //Refreshes the UI command table each time a command is added or deleted from the request.
+        function refreshCommandTable() {
+            $('#commandTable > tbody').empty();
+            var nrOfSteps = 0;
+            for (var i = 0; i < request.Commands.length; i++) {
+                nrOfSteps++;
+                var status = request.Commands[i]["Status"];
+                var chtml = "<tr><td>Step " + nrOfSteps + ":</td><td>" + request.Commands[i]["Cmd"];
+                switch(status) {
+                case " success":
+                    chtml += "</td><td><font color='green'>" + status + "</font></td>";
+                    break;
+                case " failed":
+                    chtml += "</td><td><font color='red'>" + status + "</font></td>";
+                    break;
+                case "pending":
+                    chtml += "</td><td><font color='black'>" + status + "</font></td>";
+                    break;
+                }
+                chtml += "<td><button id='" + request.Commands[i]["Id"] + "' onclick='deleteCommand(id)'>X</button></td></tr>";
+                $('#commandTable > tbody').append(chtml);
+            }
+        };
+
+        //Performs an AJAX call to the "executeRequest" method on the "Home" controller
+        $("#executeRequest")
+            .click(function () {
+                var token = "@ViewData["Token"]";
+                request.Name = $('#requestName').val();
+                request.RootUrl = $('#rootUrl').val();
+                request.ReturnHtml = $('input[name=returnHtml]:checked').val();
+                request.Token = token;
+                $('#loading').show();
+                $.ajax({
+                    type: "POST",
+                    url: "/home/executerequest",
+                    contentType: 'application/json',
+                    data: JSON.stringify(request),
+
+                    //If the call was successful
+                    success: function (responseJson) {
+                        $('#loading').hide();
+                        var response = $.parseJSON(responseJson);
+                        var assertions = response['assertions'];
+                        var array = $.map(assertions,
+                            function(value, index) {
+                                return [value];
+                            });
+                        for (var i = 0; i < array.length; i++) {
+                            var commandArray = array[i].split('-');
+                            var status = commandArray[commandArray.length - 1];
+                            request.Commands[i]['Status'] = status;
+                        };
+                        refreshCommandTable();
+                    },
+
+                    //If the call failed
+                    error: function () {
+                        $('#loading').hide();
+                        alert("Something went wrong whilst executing the request, please try again.");
+                    }
+                });
+            });
+
+        //Runs when "Add Command" button is clicked and adds the command to the "request.Commands" array.
+        $("#addCommand")
+            .click(function() {
+                var cmd = $('#selectedCommand').find(":selected").val();
+                var parameters = [];
+                
+                $('#parameterDiv').children('input').each(function () {
+                    parameters.push(this.value);
+                });
+                
+                var command = { Id: commandId, Cmd: cmd, Parameters: parameters, Status:"pending"};
+                commandId++;
+                request.Commands.push(command);
+                refreshCommandTable();
+            });
+
+        //Deletes the command from the "requet.Commands" array
+        function deleteCommand(id) {
+            for (var i = 0; i < request.Commands.length; i++) {
+                if (request.Commands[i]["Id"] == id) {
+                    request.Commands.splice(i, 1);
+                }
+            }
+            refreshCommandTable();
+        };
+        
+        //Runs everytime a command changes
+        $('select[name="selectedCommand"]').change(function () {
+            var commandName = $(this).val();
+            selectionChanged(commandName);
+        });
+
+        //Updates the parameter Inputs
+        function selectionChanged(commandName) {
+            var parameterDiv = $('#parameterDiv');
+            parameterDiv.empty();
+            var parametersToAppend = "";
+            
+            switch (commandName) {
+                case "GoToUrl":
+                    parametersToAppend += "<br/>Url:<input class='form-control'/>";
+                    break;
+                case "ElementExists":
+                    parametersToAppend += "<br/>Identifier:<input class='form-control'/>";
+                    parametersToAppend += "<br/>Value:<input class='form-control'/>";
+                    break;
+                case "GiveInput":
+                    parametersToAppend += "<br/>Identifier:<input class='form-control'/>";
+                    parametersToAppend += "<br/>Value:<input class='form-control'/>";
+                    parametersToAppend += "<br/>Input:<input class='form-control'/>";
+                    break;
+                case "ClickElement":
+                    parametersToAppend += "<br/>Identifier:<input class='form-control'/>";
+                    parametersToAppend += "<br/>Value:<input class='form-control'/>";
+                    break;
+                case "Login":
+                    parametersToAppend += "<br/>Username/email:<input class='form-control'/>";
+                    parametersToAppend += "<br/>Password:<input class='form-control' type='password'/>";
+                    break;
+            }
+            parameterDiv.append(parametersToAppend);
+        }
+    </script>
+}
+<br />

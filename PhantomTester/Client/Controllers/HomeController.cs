@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Client.Data;
@@ -8,6 +10,8 @@ using Client.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using NuGet.Protocol.Core.v3;
 
 namespace Client.Controllers
 {
@@ -72,6 +76,28 @@ namespace Client.Controllers
             ViewData["Message"] = "Your application description page.";
 
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult TestSuite(string token)
+        {
+            ViewData["Token"] = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<string> ExecuteRequest([FromBody] JObject request)
+        {
+            var masterUrl = "http://ptmaster.azurewebsites.net/main";
+            using (var client = new HttpClient())
+            {
+                var token = request["Token"].Value<string>();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Add("pttoken", token);
+                var response = await client.PostAsJsonAsync(masterUrl, request);
+                return await response.Content.ReadAsStringAsync();
+            }
         }
 
         public IActionResult Contact()
