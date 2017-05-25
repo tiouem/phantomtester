@@ -40,7 +40,7 @@ namespace Worker.Commands
             catch (Exception e)
             {
                 //Element was not found
-                throw new NotImplementedException();
+                return false;
             }
 
             //Wrong parameters were used
