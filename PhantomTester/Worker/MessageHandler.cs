@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using Model;
@@ -45,7 +46,7 @@ namespace Worker
                 try
                 {
                     var message = _ptQueueClient.Receive();
-                    Console.WriteLine("Received message " + message.MessageId);
+                    //Console.WriteLine("Received message " + message.MessageId);                   
                     if (message != null)
                         Task.Run(() => ProcessMessage(message));
                 }
@@ -87,6 +88,8 @@ namespace Worker
                     WorkerResponse response;
                     using (var worker = new PhantomWorker())
                     {
+                        var tClient = new TelemetryClient();
+                        tClient.TrackEvent("Working on " + workerRequest.Guid);
                         response = worker.ExecuteRequest(workerRequest);
                         Console.WriteLine("Response retrieved");
                     }
@@ -113,12 +116,14 @@ namespace Worker
             {
                 using (var client = GetClient())
                 {
+                    var tClient = new TelemetryClient();
                     var postAsJsonAsync = await client.PostAsJsonAsync(_masterUrl, response);
                     var statusCode = postAsJsonAsync.StatusCode;
                     if (statusCode != HttpStatusCode.Accepted)
                     {
-                        //Something went wrong with the post
+                        tClient.TrackEvent("There was an error while sending response " + response.Guid);
                     }
+                    tClient.TrackEvent(response.Guid + " Response sent");
                     Console.WriteLine("----- Message sent -----");
                 }
             });
