@@ -88,7 +88,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        <button id="executeRequest" class="btn btn-default">Execute Request</button>
+                        <button id="executeRequest" class="btn btn-default" disabled="disabled">Execute Request</button>
                         <div style="text-align: center;" ><img id="loading" src="https://harpers.org/wp-content/themes/harpers/images/ajax_loader.gif" height="30" width="30" style="margin: 10px 10px 10px 10px" hidden="hidden"/></div>
                     </div>
                 </div>
@@ -227,6 +227,7 @@
                 commandId++;
                 request.Commands.push(command);
                 refreshCommandTable();
+                $("#executeRequest").prop('disabled', false);
             });
 
         //Deletes the command from the "requet.Commands" array
@@ -237,6 +238,9 @@
                 }
             }
             refreshCommandTable();
+            if (request.Commands.length < 1) {
+                $("#executeRequest").prop('disabled',true);
+            }
         };
         
         //Runs everytime a command changes
