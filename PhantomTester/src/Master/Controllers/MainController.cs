@@ -104,7 +104,7 @@ namespace Master.Controllers
             _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, request.Guid.ToString());
             telemetryClient.TrackEvent(String.Format(@"{0} Message {1} sent to queue", request.Guid, request.Name));
 
-            //Wait for the response using the same timeout as for the cache
+            //Wait for the response using the same timeout as for the cachee
             _waitHandle.WaitOne(TimeSpan.FromMinutes(2));
 
             Response response;
